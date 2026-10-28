@@ -94,7 +94,7 @@
   .tips{width:360px; align-self:flex-end; padding:12px 16px; border:1px solid rgba(255,200,110,.35);
         border-radius:10px; background:rgba(8,14,22,.86)}
   .tips .cap{font-size:11px; letter-spacing:2px; color:var(--gold); font-weight:800; margin-bottom:8px}
-  .tips p{font-size:13.5px; line-height:1.45; color:#dbe7f2}
+  .tips p{font-size:13.5px; line-height:1.45; color:#dbe7f2; transition:opacity .2s ease; min-height:38px}
   .keys{display:flex; gap:16px; margin-top:12px; flex-wrap:wrap}
   .keys div{display:flex; align-items:center; gap:7px; font-size:11.5px; color:var(--dim)}
   kbd{display:inline-block; min-width:24px; text-align:center; padding:2px 5px; border-radius:4px;
@@ -102,8 +102,15 @@
 
   /* ---------- подвал ---------- */
   footer{border-top:1px solid rgba(120,215,255,.16); padding-top:12px; margin-top:16px;
-         display:flex; justify-content:space-between; gap:20px; font-size:12px; color:#8299ab; letter-spacing:1px}
+         display:flex; justify-content:space-between; align-items:center; gap:20px; font-size:13px; color:#a9bfd2}
   footer b{color:#c9dbe8; font-weight:700}
+  .foot-tip{display:flex; align-items:center; gap:12px; min-width:0}
+  .foot-tip .tag{flex:0 0 auto; font-size:10.5px; letter-spacing:1.6px; font-weight:800; color:#0a131f;
+                 background:var(--gold); padding:3px 8px; border-radius:3px}
+  .foot-tip #footTip{white-space:nowrap; overflow:hidden; text-overflow:ellipsis; color:#d5e4f0}
+  .foot-right{display:flex; align-items:center; gap:18px; flex:0 0 auto; font-size:12px; letter-spacing:1px; color:#8299ab}
+  .counter b{color:var(--acc)}
+  .build{color:#6d8398}
   .corner{position:fixed; width:26px; height:26px; border:2px solid rgba(120,215,255,.35); z-index:4}
   .c1{top:18px;left:18px;border-right:0;border-bottom:0} .c2{top:18px;right:18px;border-left:0;border-bottom:0}
   .c3{bottom:18px;left:18px;border-right:0;border-top:0} .c4{bottom:18px;right:18px;border-left:0;border-top:0}
@@ -176,8 +183,14 @@
   </main>
 
   <footer>
-    <span><b>ПРАВИЛА:</b> не РП в чате · не читерить · слушаться офицеров · уважать игроков · не РДМ · не уходить с поста</span>
-    <span>Discord: <b>heritage</b> · VK: <b>heritage_rp</b> · <b id="foot-r">Heritage War Operations</b></span>
+    <div class="foot-tip">
+      <span class="tag" id="tipTag">МЕДИЦИНА</span>
+      <span id="footTip">Раненого можно утащить: наведись на тело и нажми E — работает и вне ивента.</span>
+    </div>
+    <div class="foot-right">
+      <span class="counter" id="filesLeft">—</span>
+      <span class="build">HWO <b id="ver">1.7</b></span>
+    </div>
   </footer>
 </div>
 
@@ -186,14 +199,27 @@
    Данные от движка GMod. Функции вызываются движком по имени.
    --------------------------------------------------------------- */
 var TIPS = [
-  "Раненого можно утащить: наведись на тело и нажми E. Работает и вне ивента.",
-  "Медик: R у тела — CPR, ПКМ — медсумка. Дефибриллятор: три разряда в зелёное окно.",
-  "F4 → «События» → «Операции»: контракты, поддержка формирования и экран итогов.",
-  "Голокарта F7: точки, слои и приказы отряда. ПКМ по точке — приказ.",
-  "Настройки механик (только персонал): «События» → «Операции» → «Настройки».",
-  "Справочник F4 → «Справочник»: раздел «Операции» — статьи по новым механикам.",
-  "Конвой требует минимум четырёх бойцов; без эскорта техника не дойдёт.",
-  "Перенос тела замедляет вас до 62%; медик тащит быстрее, тяжёлая броня — медленнее."
+  ["МЕДИЦИНА", "Раненого можно утащить: наведись на тело и нажми E — работает и вне ивента."],
+  ["МЕДИЦИНА", "Медик: R у тела — CPR, ПКМ — медсумка. Дефибриллятор: три разряда в зелёное окно."],
+  ["МЕДИЦИНА", "Перенос замедляет до 62%: медик тащит быстрее, тяжёлая броня — медленнее."],
+  ["МЕДИЦИНА", "Триаж в HUD показывает раненых по приоритету — сначала те, кто ещё дышит."],
+  ["ОПЕРАЦИИ", "F4 → «События» → «Операции»: контракты, поддержка формирования и экран итогов."],
+  ["ОПЕРАЦИИ", "Конвой требует минимум четырёх бойцов: без эскорта техника не дойдёт."],
+  ["ОПЕРАЦИИ", "Голокарта F7: точки, слои и приказы отряда. ПКМ по точке — приказ."],
+  ["ОПЕРАЦИИ", "Инженер со слайсером может перехватить повреждённого дроида КНС."],
+  ["ИНТЕРФЕЙС", "ESC-меню на весь экран: плитка «ОПЕРАЦИИ» ведёт в отчёт и медсумку."],
+  ["ИНТЕРФЕЙС", "Справочник F4 → «Справочник»: раздел «Операции» — статьи по механикам."],
+  ["ИНТЕРФЕЙС", "Настройки механик (только персонал): «События» → «Операции» → «Настройки»."],
+  ["ПРОГРЕССИЯ", "Деревья прокачки открываются в «Операциях»: узлы дают пассивные бонусы отряду."],
+  ["ПРОГРЕССИЯ", "Кейсы не «вскрываются», а открываются — и всегда показывают шансы заранее."],
+  ["ПРОГРЕССИЯ", "Лут-центр: история открытий хранит последние находки — проверяй вкладку «История»."],
+  ["БОЙ", "Ранение снижает точность: перевязаться можно бинтом, даже без медика рядом."],
+  ["БОЙ", "Мины подсвечиваются сканером дрона — не беги первым по коридору."],
+  ["БОЙ", "Ночной режим бьёт по видимости у обеих сторон: фонарь — это и цель, и спасение."],
+  ["СВЯЗЬ", "Приказы отряда живут до конца операции: не выполняешь — теряешь вклад в итог."],
+  ["СВЯЗЬ", "Офицер может вызвать поддержку: бюджет формирования виден в панели операций."],
+  ["НОВОЕ", "Экран загрузки обновлён: этапы и проценты берутся прямо из движка, без заглушек."],
+  ["НОВОЕ", "Если чего-то не видно — открой консоль и набери hwo_diag: покажет состояние интерфейса."]
 ];
 var tipIndex = 0, total = 0, needed = 0, fake = 0, fakeTimer = null;
 
@@ -219,12 +245,20 @@ function setProgress(p){
 }
 
 /* Подсказки крутятся всегда, поэтому экран живой даже без данных движка */
-setInterval(function(){
-  tipIndex = (tipIndex + 1) % TIPS.length;
-  var tip = $("tip");
-  tip.style.opacity = 0;
-  setTimeout(function(){ tip.textContent = TIPS[tipIndex]; tip.style.opacity = 1; }, 220);
-}, 4200);
+function setTip(i){
+  tipIndex = ((i % TIPS.length) + TIPS.length) % TIPS.length;
+  var pair = TIPS[tipIndex];
+  var a = $("tip"), b = $("footTip"), tag = $("tipTag");
+  a.style.opacity = 0; b.style.opacity = 0;
+  setTimeout(function(){
+    a.textContent = pair[1];
+    b.textContent = pair[1];
+    tag.textContent = pair[0];
+    a.style.opacity = 1; b.style.opacity = 1;
+  }, 200);
+}
+setTip(0);
+setInterval(function(){ setTip(tipIndex + 1); }, 4600);
 
 /* ---------------------------------------------------------------
    Колбэки движка (точные имена из вики Garry's Mod)
@@ -237,7 +271,13 @@ function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemo
   if (maxplayers) document.title = (servername || "Heritage") + " · " + maxplayers + " слотов";
 }
 function SetFilesTotal(t){ total = t || 0; if (!needed) { needed = total; update(); } }
-function SetFilesNeeded(n){ needed = n || 0; update(); }
+function SetFilesNeeded(n){
+  needed = n || 0;
+  $("filesLeft").innerHTML = needed > 0
+    ? "осталось файлов: <b>" + needed + "</b>"
+    : "все файлы получены";
+  update();
+}
 function update(){
   var have = Math.max(0, total - needed);
   if (total > 0) setProgress(total ? have / total : 0);

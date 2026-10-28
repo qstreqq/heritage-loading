@@ -122,6 +122,9 @@
   .foot-right{display:flex; align-items:center; gap:18px; flex:0 0 auto; font-size:12px; letter-spacing:1px; color:#8299ab}
   .counter b{color:var(--acc)}
   .build{color:#6d8398}
+  #bgstate{position:fixed; right:26px; bottom:64px; z-index:9; font-size:10px; letter-spacing:1.4px;
+           padding:2px 6px; border-radius:3px; background:rgba(8,14,22,.75); color:#7f95a8}
+  #bgstate.ok{color:#76ec94} #bgstate.bad{color:#ff8a8a}
   .corner{position:fixed; width:26px; height:26px; border:2px solid rgba(120,215,255,.35); z-index:4}
   .c1{top:18px;left:18px;border-right:0;border-bottom:0} .c2{top:18px;right:18px;border-left:0;border-bottom:0}
   .c3{bottom:18px;left:18px;border-right:0;border-top:0} .c4{bottom:18px;right:18px;border-left:0;border-top:0}
@@ -140,6 +143,7 @@
 <div id="shade"></div>
 <div id="scan"></div>
 <div id="sweep"></div>
+<div id="bgstate">BG: ?</div>
 <div class="corner c1"></div><div class="corner c2"></div>
 <div class="corner c3"></div><div class="corner c4"></div>
 
@@ -315,11 +319,15 @@ fakeTimer = setInterval(function(){
 
 var artImg = document.getElementById("artimg");
 if (artImg){
+  var bs = document.getElementById("bgstate");
+  function bgOk(){ if (bs){ bs.className="ok"; bs.textContent="BG: OK"; } }
+  function bgBad(){ if (bs){ bs.className="bad"; bs.textContent="BG: NONE"; } }
   if (artImg.complete && artImg.naturalWidth > 0){
-    artImg.style.opacity = 1;
+    artImg.style.opacity = 1; bgOk();
   } else {
-    artImg.onload = function(){ artImg.style.opacity = 1; };
-    artImg.onerror = function(){ artImg.style.display = "none"; };
+    artImg.onload = function(){ artImg.style.opacity = 1; bgOk(); };
+    artImg.onerror = function(){ artImg.style.display = "none"; bgBad(); };
+    setTimeout(function(){ if (artImg.style.opacity !== "1") bgBad(); }, 4000);
   }
 }
 

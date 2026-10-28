@@ -267,7 +267,8 @@ function GameDetails(servername, serverurl, mapname, maxplayers, steamid, gamemo
   $("srv").textContent = servername || "Heritage | Republic";
   $("map").textContent = mapname || "—";
   $("me").textContent = steamid ? ("ID " + steamid) : "—";
-  if (serverurl) $("foot-r").textContent = "Heritage War Operations";
+  /* безопасно: элемент мог быть заменён при редизайне */
+  var fr = $("foot-r"); if (fr && serverurl) fr.textContent = "Heritage War Operations";
   if (maxplayers) document.title = (servername || "Heritage") + " · " + maxplayers + " слотов";
 }
 function SetFilesTotal(t){ total = t || 0; if (!needed) { needed = total; update(); } }
